@@ -1,0 +1,19 @@
+str = "Mg(OH)2"
+l = dict()
+i = 0
+
+while i < len(str):
+    if str[i].isalpha():  # Check if the character is a letter
+        char = str[i]
+        if i + 1 < len(str) and str[i + 1].isdigit():  # Check if the next character is a digit
+            count = int(str[i + 1])
+            i += 1  # Skip the digit in the next iteration
+        else:
+            count = 1
+        if char in l:
+            l[char] += count
+        else:
+            l[char] = count
+    i += 1
+
+print(l)
