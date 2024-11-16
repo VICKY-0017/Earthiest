@@ -8,6 +8,9 @@
 
     "install-todo-server": "cd todo-mern/Server && npm install",
     "install-server": "cd Servers && npm install",
+    "start-server": "node index.jsx", 
+    "start-mongodb": "node Servers/mongodb.js", 
+    "start-gemini-server": "node Servers/geminisrvr.mjs",
     "start-todo-server": "cd todo-mern/Server && node index.js",
     "install-todo-client": "cd todo-mern/client && npm install",
     "build-todo-client": "cd todo-mern/client && npm run build",
