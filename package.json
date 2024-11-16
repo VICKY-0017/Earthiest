@@ -8,7 +8,7 @@
 
     "install-todo-server": "cd todo-mern/Server && npm install",
     "install-server": "cd Servers && npm install",
-    "start-server": "node user/wldlyf-user/src/index.jsx", 
+    "start-server": "node user/wldlyf-user/src/index.js", 
     "start-mongodb": "node Servers/mongodb.js", 
     "start-gemini-server": "node Servers/geminisrvr.mjs",
     "start-todo-server": "cd todo-mern/Server && node index.js",
