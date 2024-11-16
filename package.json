@@ -4,7 +4,15 @@
   "type": "module",
   "main": "gemini.js",
   "scripts": {
-    "start": "node --experimental-modules gemini.js"
+    "start": "node --experimental-modules gemini.js",
+
+    "install-todo-server": "cd todo-mern/Server && npm install",
+    "start-todo-server": "cd todo-mern/Server && node index.js",
+    "install-todo-client": "cd todo-mern/client && npm install",
+    "build-todo-client": "cd todo-mern/client && npm run build",
+    "start-todo-client": "cd todo-mern/client && npm start",
+    "install-all": "npm install && npm run install-todo-server && npm run install-todo-client",
+    "start-all": "npm run start-wildlyf & npm run start-todo-server & npm run start-todo-client"
   },
   "dependencies": {
     "@google/generative-ai": "^0.14.1",
