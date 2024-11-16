@@ -7,7 +7,7 @@
     "start": "node --experimental-modules gemini.js",
 
     "install-todo-server": "cd todo-mern/Server && npm install",
-    "install-server": "cd Server && npm install",
+    "install-server": "cd Servers && npm install",
     "start-todo-server": "cd todo-mern/Server && node index.js",
     "install-todo-client": "cd todo-mern/client && npm install",
     "build-todo-client": "cd todo-mern/client && npm run build",
