@@ -33,7 +33,7 @@ export default function UserDetails() {
     if (user) {
       const fetchUserData = async () => {
         try {
-          const response = await axios.get(`http://localhost:8000/user-details/${user.email}`);
+          const response = await axios.get(`https://wyldlyf-orginal-bknd.onrender.com/user-details/${user.email}`);
           setPosts(response.data.posts);
           setOffers(response.data.offers);
         } catch (error) {
