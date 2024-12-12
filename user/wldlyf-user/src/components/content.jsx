@@ -11,7 +11,7 @@ export function Showcntnt({ photo, title, content, onDelete, articleId }) {
   return (
     <div className="bg-gray-800 rounded-lg shadow-md overflow-hidden transition duration-300 transform hover:scale-105">
       <img 
-        src={photo.startsWith('http') ? photo : `http://localhost:8000/${photo}`} 
+        src={photo.startsWith('http') ? photo : `https://wyldlyf-orginal-bknd.onrender.com/${photo}`} 
         alt={title} 
         className="w-full h-48 object-cover" 
       />  
