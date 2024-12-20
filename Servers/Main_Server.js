@@ -108,16 +108,50 @@ app.post('/posts', upload.single('image'), async (req, res) => {
     }
 });
 
+// Updated /posts endpoint to use dynamic base URL for image paths
 app.get('/posts', async (req, res) => {
     try {
         const posts = await Post.find();
+        
+        // Determine base URL based on environment (development or production)
+        const baseUrl = process.env.NODE_ENV === 'production' 
+            ? 'https://wyldlyf-orginal.onrender.com' // Production frontend domain
+            : `http://localhost:${port2}`; // Development backend domain
+        
+        // Changed: Dynamically set image URL based on the environment
         res.status(200).json(posts.map(post => ({
             ...post._doc,
-            image: post.image ? `http://localhost:${port2}/${post.image}` : null
+            image: post.image ? `${baseUrl}/${post.image}` : null // Update image URL
         })));
     } catch (error) {
         console.error('Error fetching posts:', error);
         res.status(500).send('Error fetching posts');
+    }
+});
+
+// Updated /user-details/:email endpoint to use dynamic base URL for image paths
+app.get('/user-details/:email', async (req, res) => {
+    const { email } = req.params;
+    try {
+        const userPosts = await Post.find({ email });
+        const userOffers = await Offer.find({ email });
+
+        // Determine base URL based on environment (development or production)
+        const baseUrl = process.env.NODE_ENV === 'production' 
+            ? 'https://wyldlyf-orginal.onrender.com' // Production frontend domain
+            : `http://localhost:${port2}`; // Development backend domain
+        
+        // Changed: Dynamically set image URL based on the environment
+        res.status(200).json({
+            posts: userPosts.map(post => ({
+                ...post._doc,
+                image: post.image ? `${baseUrl}/${post.image}` : null // Update image URL
+            })),
+            offers: userOffers
+        });
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        res.status(500).send('Error fetching user details');
     }
 });
 
@@ -129,25 +163,6 @@ app.delete('/posts/:id', async (req, res) => {
     } catch (error) {
         console.error('Error deleting post:', error);
         res.status(500).send('Error deleting post');
-    }
-});
-
-app.get('/user-details/:email', async (req, res) => {
-    const { email } = req.params;
-    try {
-        const userPosts = await Post.find({ email });
-        const userOffers = await Offer.find({ email });
-
-        res.status(200).json({
-            posts: userPosts.map(post => ({
-                ...post._doc,
-                image: post.image ? `http://localhost:${port2}/${post.image}` : null
-            })),
-            offers: userOffers
-        });
-    } catch (error) {
-        console.error('Error fetching user details:', error);
-        res.status(500).send('Error fetching user details');
     }
 });
 
