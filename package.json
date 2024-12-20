@@ -5,6 +5,7 @@
   "main": "gemini.js",
   "scripts": {
     "start": "node --experimental-modules gemini.js",
+     "build": "react-scripts build",
 
     "install-todo-server": "cd todo-mern/Server && npm install",
     "install-server": "cd Servers && npm install",
