@@ -14,7 +14,15 @@ const port1 = 5000; // Port for generative AI server
 const port2 = 8000; // Port for MongoDB and posts server
 
 // Configure CORS and body parsing middleware
-app.use(cors());
+const corsOptions = {
+  origin: 'https://wyldlyf-orginal.onrender.com',  // Allow frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,  // if you're using cookies/session
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
