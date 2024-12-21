@@ -75,6 +75,8 @@ export function Contents(props) {
         });
         navigate("/");
       } else {
+        const errorMessage = await response.text();
+        console.error('Error response:', errorMessage);
         alert('Error creating post');
       }
     } catch (error) {
