@@ -58,9 +58,24 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage });
 
-app.use('/uploads', express.static('uploads')); // Serve images statically
+// const upload = multer({ storage });
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'), false);
+    }
+  },
+});
+
+
+// app.use('/uploads', express.static('uploads')); // Serve images statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // Google Generative AI Setup
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -105,11 +120,20 @@ app.post('/posts', upload.single('image'), async (req, res) => {
     const { email, title, content } = req.body;
     const image = req.file ? `uploads/${req.file.filename}` : null;
 
+
+//changed
+    if (!email || !title || !content) {
+      return res.status(400).send('Missing required fields');
+    }
+
+    
+
     const newPost = new Post({ email, title, content, image });
     await newPost.save();
     res.status(201).send('Post created successfully');
   } catch (error) {
-    console.error('Error creating post:', error);
+    console.error('Error creating post:', error.message);
+    console.error('Stack trace:', error.stack); 
     res.status(500).send('Error creating post');
   }
 });
@@ -121,7 +145,8 @@ app.get('/posts', async (req, res) => {
     const baseUrl = process.env.BASE_URL || `http://localhost:${port}`; // Adjust URL for production
     res.status(200).json(posts.map(post => ({
       ...post._doc,
-      image: post.image ? `${baseUrl}/${post.image}` : null
+      // image: post.image ? `${baseUrl}/${post.image}` : null
+      image: post.image ? `${baseUrl}/uploads/${path.basename(post.image)}` : null,
     })));
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -161,6 +186,15 @@ app.get('/user-details/:email', async (req, res) => {
     res.status(500).send('Error fetching user details');
   }
 });
+
+
+app.post('/test-upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded');
+  }
+  res.status(200).json({ filename: req.file.filename, path: req.file.path });
+});
+
 
 // Start the server
 app.listen(port, () => {
