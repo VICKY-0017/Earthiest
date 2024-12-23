@@ -6,7 +6,6 @@ import axios from 'axios'
 
 
 
-
 export function HomePage() {
 
 const [postList, setPostList] = useState([]);
