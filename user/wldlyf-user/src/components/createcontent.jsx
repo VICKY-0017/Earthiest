@@ -4,7 +4,6 @@ import {auth} from "../firebase/firebase";
 import {onAuthStateChanged} from "firebase/auth"
 
 
-
 export function Contents(props) {
   const [content, setContent] = useState({
     photo: "",
