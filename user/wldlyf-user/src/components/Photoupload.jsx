@@ -38,7 +38,8 @@ export function Photoupload() {
 
 async function fetchRandomOffer(){
   try{
-    const response = await fetch("https://wyldlyf-orginal-bknd.onrender.com/rndm-offers");
+    //const response = await fetch("https://wyldlyf-orginal-bknd.onrender.com/rndm-offers");
+    const response = await fetch("http://localhost:8000/rndm-offers");
     if(response.ok){
       const result = await response.json();
       setOffer(result);
@@ -68,7 +69,8 @@ async function fetchRandomOffer(){
       formData.append('file', img);
 
       try {
-        const response = await fetch('https://wyldlyf-orginal-bknd.onrender.com/upload', {
+        //const response = await fetch('https://wyldlyf-orginal-bknd.onrender.com/upload'
+        const response = await fetch('http://localhost:8000/upload', {
           method: "POST",
           body: formData,
         });
