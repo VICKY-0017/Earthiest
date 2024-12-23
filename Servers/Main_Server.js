@@ -234,17 +234,20 @@ app.get("/user-details/:email", async (req, res) => {
   
 
 // Serve Frontend
-app.use(express.static(path.join(__dirname, "client", "dist")));
+
+
+app.use(express.static(path.join(__dirname, "user", "wldlyf-user", "public")));
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+    res.sendFile(path.join(__dirname, "user", "wldlyf-user", "public", "index.html"));
 });
 
 app.get("/test-upload", (req, res) => {
-  fs.readdir("./uploads", (err, files) => {
-    if (err) return res.status(500).send("Error accessing uploads.");
-    res.json(files);
-  });
+    fs.readdir(path.join(__dirname, "wyldlyf_orginal", "uploads"), (err, files) => {
+        if (err) return res.status(500).send("Error accessing uploads.");
+        res.json(files);
+    });
 });
+
 
 // Start Server
 app.listen(PORT, () => {
