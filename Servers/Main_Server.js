@@ -63,8 +63,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+
+
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "client", "dist")));
+  app.use(express.static(path.join(__dirname, "wldlyf-user", "public")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "wldlyf-user", "public", "index.html"));
+  });
 } else {
   app.get("/", (req, res) => {
     res.send("Backend running locally. Use React dev server for frontend.");
