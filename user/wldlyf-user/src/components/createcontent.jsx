@@ -62,7 +62,7 @@ export function Contents(props) {
 
     try {
       //const response = await fetch('https://wyldlyf-orginal-bknd.onrender.com/posts',
-      const response = await fetch('http://localhost:8000/posts', {
+      const response = await fetch('https://wyldlyf-orginal-bknd.onrender.com/posts', {
         method: 'POST',
         body: formData,
       });
