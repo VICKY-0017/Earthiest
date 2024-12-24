@@ -16,7 +16,7 @@ const [postList, setPostList] = useState([]);
 
     const fetchPosts = async() =>{
         try{
-            const response = await axios.get("https://wyldlyf-orginal-bknd.onrender.com/posts");
+            const response = await axios.get("http://localhost:8000/posts");
             setPostList(response.data);
 
         }catch(err){
@@ -26,7 +26,7 @@ const [postList, setPostList] = useState([]);
   
     const deletePost = async(id)=>{
         try{
-            await axios.delete(`https://wyldlyf-orginal-bknd.onrender.com/posts/${id}`);
+            await axios.delete(`http://localhost:8000/posts/${id}`);
             fetchPosts();
         }catch(err){
             console.log(err);
