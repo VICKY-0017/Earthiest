@@ -45,46 +45,107 @@ export function Contents(props) {
       }));
     }
   }
-
-
-  async function submitCntnt(event) {
-    event.preventDefault();
-    props.additem(content);
-
+//updation
+async function uploadImage(file) {
     const formData = new FormData();
-    formData.append('email',user.email);
-    formData.append('title', content.title);
-    formData.append('content', content.content);
-    if (content.photo) {
-      formData.append('image', content.photo);
-    }
+    formData.append("image", file);
 
     try {
-      //const response = await fetch('https://wyldlyf-orginal-bknd.onrender.com/posts',
-      const response = await fetch('http://localhost:8000/posts', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        alert('Post created successfully!');
-        setContent({
-          photo: "",
-          title: "",
-          content: "",
+        const response = await fetch("http://localhost:8000/api/uploadthing/imageUploader", {
+            method: "POST",
+            body: formData,
         });
-        navigate("/");
-      } else {
-        const errorMessage = await response.text();
-        console.error('Error response:', errorMessage);
-        alert('Error creating post');
-      }
+        const data = await response.json();
+        if (response.ok) {
+            return data.uploadUrl; // Adjust this if the response format differs
+        } else {
+            console.error("Error uploading image:", data);
+            alert("Failed to upload image");
+        }
     } catch (error) {
-      alert('Error creating post');
+        console.error("Error during upload:", error);
+        alert("Failed to upload image");
     }
+    return null;
+}
 
-  }
+  // async function submitCntnt(event) {
+  //   event.preventDefault();
+  //   props.additem(content);
 
+  //   const formData = new FormData();
+  //   formData.append('email',user.email);
+  //   formData.append('title', content.title);
+  //   formData.append('content', content.content);
+  //   if (content.photo) {
+  //     formData.append('image', content.photo);
+  //   }
+
+  //   try {
+  //     //const response = await fetch('https://wyldlyf-orginal-bknd.onrender.com/posts',
+  //     const response = await fetch('http://localhost:8000/posts', {
+  //       method: 'POST',
+  //       body: formData,
+  //     });
+
+  //     if (response.ok) {
+  //       alert('Post created successfully!');
+  //       setContent({
+  //         photo: "",
+  //         title: "",
+  //         content: "",
+  //       });
+  //       navigate("/");
+  //     } else {
+  //       const errorMessage = await response.text();
+  //       console.error('Error response:', errorMessage);
+  //       alert('Error creating post');
+  //     }
+  //   } catch (error) {
+  //     alert('Error creating post');
+  //   }
+
+  // }
+
+async function submitCntnt(event) {
+    event.preventDefault();
+
+    try {
+        let uploadUrl = null;
+        if (content.photo) {
+            uploadUrl = await uploadImage(content.photo);
+            if (!uploadUrl) {
+                return; // Stop if image upload fails
+            }
+        }
+
+        const postData = {
+            email: user.email,
+            title: content.title,
+            content: content.content,
+            uploadUrl: uploadUrl,
+        };
+
+        const response = await fetch("http://localhost:8000/posts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(postData),
+        });
+
+        if (response.ok) {
+            alert("Post created successfully!");
+            setContent({ photo: "", title: "", content: "" });
+            navigate("/");
+        } else {
+            const errorMessage = await response.text();
+            console.error("Error response:", errorMessage);
+            alert("Error creating post");
+        }
+    } catch (error) {
+        console.error("Error creating post:", error);
+        alert("Error creating post");
+    }
+}
 
 
 
