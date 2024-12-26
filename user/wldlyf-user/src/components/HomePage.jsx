@@ -74,7 +74,7 @@ const [postList, setPostList] = useState([]);
             {postList.map((item, index) => (
             <Showcntnt
                 key={index}
-                id={index}
+                id={item._id}
                 photo={item.image || "/uploads/placeholder.jpg"}
                 title={item.title}
                 content={item.content}
