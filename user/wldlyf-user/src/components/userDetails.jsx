@@ -92,7 +92,7 @@ export default function UserDetails() {
 
                     <img 
                       alt={post.title}
-                      src={post.image.startsWith('http') ? photo : `https://wyldlyf-orginal-bknd.onrender.com/${post.image}`} 
+                      src={post.image.startsWith('http') ? post.image : `https://wyldlyf-orginal-bknd.onrender.com/${post.image}`} 
                       className="mt-3 rounded-lg w-full h-48 object-cover" 
                       />  
                      
