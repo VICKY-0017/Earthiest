@@ -18,7 +18,13 @@ export function Contents(props) {
   useEffect(()=>{
     const unsubscrb = onAuthStateChanged(auth , (user)=>{
       if(user){
-        setUser(user);
+
+        const refresh = performance.navigate.type === performance.navigate.refresh;
+        if(refresh){
+          navigate('/');
+          setUser(user);
+        }
+        
       } else {
         setUser(null);
         navigate("/Login");
