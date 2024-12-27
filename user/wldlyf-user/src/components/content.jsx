@@ -18,7 +18,8 @@ export function Showcntnt({ photo, title, content, onDelete, articleId }) {
 
       <div className="p-4">
         <h2 className="font-bold text-xl mb-2 text-white">{title}</h2>
-        <p className="text-gray-400">{content.substring(0, 100)}...</p>
+        <p className="text-gray-400">{content ? content.substring(0, 100) : "No content available"}...</p>
+
 
         <div className="mt-4 flex space-x-4">
           {/* Updated Read More Button */}
