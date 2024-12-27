@@ -34,6 +34,7 @@ export function Contents(props) {
 
     if (name === "photo" && files.length > 0) {
       const file = files[0];
+      console.log("File selected: ", file);
       setContent((prevVal) => ({
         ...prevVal,
         photo:file,
@@ -55,6 +56,8 @@ export function Contents(props) {
     formData.append('email',user.email);
     formData.append('title', content.title);
     formData.append('content', content.content);
+
+     console.log("Uploading file: ", content.photo);
     if (content.photo) {
       formData.append('image', content.photo);
     }
