@@ -83,7 +83,7 @@ export default function UserDetails() {
                 {posts.length} total
               </span>
             </div>
-            <div className="space-y-4">
+{/*             <div className="space-y-4">
               {posts.length > 0 ? (
                 posts.map((post) => (
                   <div key={post._id} className="border rounded-lg p-4 hover:border-blue-200 transition-colors">
@@ -106,7 +106,7 @@ export default function UserDetails() {
               ) : (
                 <p className="text-gray-500 text-center py-4">No posts yet. Create your first post!</p>
               )}
-            </div>
+            </div> */}
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6">
