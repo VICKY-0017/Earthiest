@@ -36,6 +36,7 @@ export default function UserDetails() {
           const response = await axios.get(`https://wyldlyf-orginal-bknd.onrender.com/user-details/${user.email}`);
           setPosts(response.data.posts);
           setOffers(response.data.offers);
+          console.log(response.data.posts);
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {
@@ -88,6 +89,7 @@ export default function UserDetails() {
                   <div key={post._id} className="border rounded-lg p-4 hover:border-blue-200 transition-colors">
                     <h4 className="font-semibold text-gray-800 mb-2">{post.title}</h4>
                     <p className="text-gray-600 text-sm">{post.content}</p>
+                    
                     {post.image && (
 
                     <img 
@@ -95,7 +97,7 @@ export default function UserDetails() {
                       src={post.image.startsWith('http') ? post.image : `https://wyldlyf-orginal-bknd.onrender.com/${post.image}`} 
                       className="mt-3 rounded-lg w-full h-48 object-cover" 
                       />  
-                    console.log(response.data.posts);
+                    
 
                      
                     )}
