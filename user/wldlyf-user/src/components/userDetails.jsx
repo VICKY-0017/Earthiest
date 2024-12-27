@@ -95,6 +95,8 @@ export default function UserDetails() {
                       src={post.image.startsWith('http') ? post.image : `https://wyldlyf-orginal-bknd.onrender.com/${post.image}`} 
                       className="mt-3 rounded-lg w-full h-48 object-cover" 
                       />  
+                    console.log(response.data.posts);
+
                      
                     )}
                   </div>
