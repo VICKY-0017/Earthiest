@@ -91,10 +91,10 @@ export default function UserDetails() {
                     {post.image && (
 
                     <img 
-        src={photo.startsWith('http') ? photo : `https://wyldlyf-orginal-bknd.onrender.com/${photo}`} 
-        alt={post.title} 
-        className="mt-3 rounded-lg w-full h-48 object-cover" 
-      />  
+                      alt={post.title}
+                      src={post.image.startsWith('http') ? photo : `https://wyldlyf-orginal-bknd.onrender.com/${post.image}`} 
+                      className="mt-3 rounded-lg w-full h-48 object-cover" 
+                      />  
                      
                     )}
                   </div>
