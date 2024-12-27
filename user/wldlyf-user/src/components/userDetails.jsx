@@ -89,11 +89,13 @@ export default function UserDetails() {
                     <h4 className="font-semibold text-gray-800 mb-2">{post.title}</h4>
                     <p className="text-gray-600 text-sm">{post.content}</p>
                     {post.image && (
-                      <img 
-                        src={post.image} 
-                        alt={post.title} 
-                        className="mt-3 rounded-lg w-full h-48 object-cover"
-                      />
+
+                    <img 
+        src={photo.startsWith('http') ? photo : `https://wyldlyf-orginal-bknd.onrender.com/${photo}`} 
+        alt={post.title} 
+        className="mt-3 rounded-lg w-full h-48 object-cover" 
+      />  
+                     
                     )}
                   </div>
                 ))
