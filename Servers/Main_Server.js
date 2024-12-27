@@ -8,6 +8,9 @@ import cors from "cors";
 import fs from "fs";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { fileURLToPath } from "url";
+import { v2 as cloudinary } from 'cloudinary';
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,15 +44,12 @@ const offerSchema = new mongoose.Schema({
 const Offer = mongoose.model("offers", offerSchema);
 
 // Multer Configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-const upload = multer({ storage: storage });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  }
+ });
 
 const getBaseURL = () => {
   return process.env.NODE_ENV === "production"
@@ -58,18 +58,18 @@ const getBaseURL = () => {
 };
 
 // Middleware
-app.use(cors({ origin: "https://wyldlyf-orginal.onrender.com", credentials: true }));
+
+const corsOptions = {
+  origin: ["http://localhost:3000", "https://wyldlyf-orginal.onrender.com"],  // List all allowed origins
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "wldlyf-user", "public")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "wldlyf-user", "public", "index.html"));
-  });
+  app.use(express.static(path.join(__dirname, "client", "dist")));
 } else {
   app.get("/", (req, res) => {
     res.send("Backend running locally. Use React dev server for frontend.");
@@ -79,11 +79,12 @@ if (process.env.NODE_ENV === "production") {
 // Google Generative AI Setup
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 
+
 // Utility Functions for Google Generative AI
-function fileToGenerativePart(filePath, mimeType) {
+function fileToGenerativePart(fileBuffer, mimeType) {
   return {
     inlineData: {
-      data: Buffer.from(fs.readFileSync(filePath)).toString("base64"),
+      data: fileBuffer.toString("base64"),
       mimeType
     },
   };
@@ -109,14 +110,21 @@ function generateImageHash(imagePath) {
   return previousUploads.some(upload => upload.imageHash === newImageHash);
 }
 
+
+cloudinary.config({
+  cloud_name:'dzemj0l2y',
+  secure:true,
+  api_key: process.env.CLOUDINARY_API,
+  api_secret:process.env.CLOUDINARY_API_SECRET
+
+})
+
 // Google Generative AI Endpoint
-
-
 app.post("/upload", upload.single("file"), async (req, res) => {
-    const filePath = req.file.path; // Path to uploaded file
+    const fileBuffer = req.file.buffer; // Path to uploaded file
     const mimeType = req.file.mimetype; // MIME type of uploaded file
       // Create a Generative Part for the file
-    const filePart = fileToGenerativePart(filePath, mimeType);
+    const filePart = fileToGenerativePart(fileBuffer, mimeType);
 
        try{
       
@@ -127,7 +135,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
               const imageParts = [filePart];
       
               const generatedContent = await model.generateContent([prompt, ...imageParts]);
-              fs.unlinkSync(filePath);
+              
               res.json({response: generatedContent.response.text()});
               if(response === "YES"){
                 
@@ -141,11 +149,60 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
 // Routes
 // Create Post
+// app.post("/posts", upload.single("image"), async (req, res) => {
+//   try {
+//     const { email, title, content } = req.body;
+//     const image = req.file ? `uploads/${req.file.filename}` : null;
+
+//     const newPost = new Post({ email, 
+//       title, 
+//       content, 
+//       image:cloudinaryResult.secure_url });
+
+//     await newPost.save();
+//     res.status(201).send("Post created successfully");
+//   } catch (error) {
+//     console.error("Error creating post:", error);
+//     res.status(500).send("Error creating post");
+//   }
+// });
+
 app.post("/posts", upload.single("image"), async (req, res) => {
   try {
+    console.log(req.file);
     const { email, title, content } = req.body;
-    const image = req.file ? `uploads/${req.file.filename}` : null;
-    const newPost = new Post({ email, title, content, image });
+    const imageFile = req.file;
+
+    let imageUrl = null;
+    if (imageFile) {
+      // Upload the image to Cloudinary
+      // cloudinaryResult = await cloudinary.uploader.upload(imageFile.path);
+      try {
+        // Convert buffer to base64
+        const b64 = Buffer.from(imageFile.buffer).toString("base64");
+        const dataURI = "data:" + imageFile.mimetype + ";base64," + b64;
+        
+        // Upload to Cloudinary directly from memory
+        const cloudinaryResult = await cloudinary.uploader.upload(dataURI, {
+          resource_type: 'auto',
+          folder: 'wyldlyf' // Optional: organize uploads in a folder
+        });
+        
+        imageUrl = cloudinaryResult.secure_url;
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return res.status(500).send("Error uploading image");
+      }
+    }
+
+    const newPost = new Post({
+      email,
+      title,
+      content,
+      image: imageUrl 
+      // cloudinaryResult ? cloudinaryResult.secure_url : null,
+    });
+
     await newPost.save();
     res.status(201).send("Post created successfully");
   } catch (error) {
@@ -154,6 +211,7 @@ app.post("/posts", upload.single("image"), async (req, res) => {
   }
 });
 
+
 // Retrieve All Posts
 app.get("/posts", async (req, res) => {
   try {
@@ -161,7 +219,7 @@ app.get("/posts", async (req, res) => {
     res.status(200).json(
       posts.map((post) => ({
         ...post._doc,
-        image: post.image ? `${getBaseURL()}/${post.image}` : null,
+        image: post.image ? post.image : null,
       }))
     );
   } catch (error) {
@@ -235,24 +293,12 @@ app.get("/user-details/:email", async (req, res) => {
 });
 
 
-
-  
-
-// Serve Frontend
-
-
-app.use(express.static(path.join(__dirname, "user", "wldlyf-user", "public")));
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "user", "wldlyf-user", "public", "index.html"));
-});
-
 app.get("/test-upload", (req, res) => {
-    fs.readdir(path.join(__dirname, "wyldlyf_orginal", "uploads"), (err, files) => {
-        if (err) return res.status(500).send("Error accessing uploads.");
-        res.json(files);
-    });
+  fs.readdir("./uploads", (err, files) => {
+    if (err) return res.status(500).send("Error accessing uploads.");
+    res.json(files);
+  });
 });
-
 
 // Start Server
 app.listen(PORT, () => {
