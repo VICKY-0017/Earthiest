@@ -53,16 +53,6 @@ async function fetchRandomOffer(){
   }
 }
 
-
-
-
-
-
-
-
-
-
-
   async function submitFile(event) {
     event.preventDefault();
     if (img) {
