@@ -5,6 +5,7 @@ import {onAuthStateChanged} from "firebase/auth"
 
 
 export function Contents(props) {
+  const[loading,setLoading] = useState(false);
   const [content, setContent] = useState({
     photo: "",
     title: "",
@@ -56,6 +57,7 @@ export function Contents(props) {
 
   async function submitCntnt(event) {
     event.preventDefault();
+    setLoading(true);
     props.additem(content);
 
     const formData = new FormData();
@@ -90,7 +92,8 @@ export function Contents(props) {
       }
     } catch (error) {
       alert('Error creating post');
-    }
+    }finally{
+      setLoading(false);
 
   }
 
@@ -141,14 +144,26 @@ export function Contents(props) {
           </div>
           <div>
             <button
-            
+              disabled={loading}
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Add Content
+              {loading?"Creating Post":"Create Post"}
             </button>
           </div>
         </form>
+
+        {loading && (
+  <div className="fixed inset-0 flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
+    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <img 
+        src="/loading2.gif" 
+        alt="Creating..."
+        className="w-30 h-30" 
+      />
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
