@@ -87,7 +87,7 @@ async function fetchRandomOffer(){
       }finally{
         setLoading(false);
       }
-    }
+    } 
   }
 
   return (
