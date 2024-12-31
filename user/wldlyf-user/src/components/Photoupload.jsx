@@ -11,6 +11,7 @@ export function Photoupload() {
   const [offer, setOffer] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [loading,setLoading] = useState(false);
 
 
   const [user , setUser] = useState(null);
@@ -66,6 +67,7 @@ async function fetchRandomOffer(){
     event.preventDefault();
     if (img) {
       const formData = new FormData();
+      setLoading(true);
       formData.append('file', img);
 
       try {
@@ -92,6 +94,8 @@ async function fetchRandomOffer(){
         }
       } catch (error) {
         console.error('Error uploading file:', error);
+      }finally{
+        setLoading(false);
       }
     }
   }
@@ -119,7 +123,7 @@ async function fetchRandomOffer(){
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Submit
+              {loading?"Analysing the Image":"Upload Photo"}
             </button>
           </form>
         ) : (
@@ -138,7 +142,17 @@ async function fetchRandomOffer(){
         )}
         <Modal isOpen={isModalOpen} toggleModal={() => setIsModalOpen(false)} />
 
-
+        {loading && (
+  <div className="fixed inset-0 flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
+    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <img 
+        src="/loading2.gif" 
+        alt="Creating..."
+        className="w-30 h-30" 
+      />
+    </div>
+  </div>
+)}
 
 
 
