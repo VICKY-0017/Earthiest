@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import {auth} from "../firebase/firebase";
 import {onAuthStateChanged} from "firebase/auth"
 
-
 export function Contents(props) {
   const[loading,setLoading] = useState(false);
   const [content, setContent] = useState({
