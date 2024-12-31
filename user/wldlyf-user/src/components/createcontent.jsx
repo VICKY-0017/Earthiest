@@ -95,6 +95,7 @@ export function Contents(props) {
       setLoading(false);
 
   }
+  }
 
 
 
