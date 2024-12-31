@@ -19,11 +19,9 @@ export function Contents(props) {
     const unsubscrb = onAuthStateChanged(auth , (user)=>{
       if(user){
 
-        const refresh = performance.navigate.type === performance.navigate.refresh;
-        if(refresh){
-          navigate('/');
+        
           setUser(user);
-        }
+        
         
       } else {
         setUser(null);
