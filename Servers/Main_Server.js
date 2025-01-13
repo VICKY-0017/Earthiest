@@ -63,7 +63,7 @@ const getBaseURL = () => {
 // Middleware
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://wyldlyf-orginal.onrender.com"],  // List all allowed origins
+  origin: ["http://localhost:3000", "https://wyldlyf-orginal.onrender.com","https://offers-providers.onrender.com"],  // List all allowed origins
   credentials: true,
 };
 app.use(cors(corsOptions));
