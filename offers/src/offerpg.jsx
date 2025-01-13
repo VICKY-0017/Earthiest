@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function OfferProvider(props) {
+export default function OfferProvider() {
   const [content, setContent] = useState({
     photo: "",
     company: "",
@@ -9,7 +9,6 @@ export default function OfferProvider(props) {
     content: "",
   });
 
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -25,12 +24,8 @@ export default function OfferProvider(props) {
   async function submitContent(event) {
     event.preventDefault();
     setLoading(true);
-    props.additem(content);
 
     const formData = new FormData();
-    if (user) {
-      formData.append("email", user.email);
-    }
     formData.append("title", content.title);
     formData.append("content", content.content);
     formData.append("company", content.company);
@@ -47,7 +42,7 @@ export default function OfferProvider(props) {
       if (response.ok) {
         alert("Post created successfully!");
         setContent({ photo: "", company: "", title: "", content: "" });
-        navigate("/");
+        navigate("/"); // Redirect after successful offer creation
       } else {
         const contentType = response.headers.get("Content-Type");
         let responseBody = contentType && contentType.includes("application/json")
