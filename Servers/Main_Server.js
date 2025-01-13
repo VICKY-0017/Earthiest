@@ -39,7 +39,10 @@ const Post = mongoose.model("posts", postSchema);
 
 const offerSchema = new mongoose.Schema({
   email: String,
+  company: String,  // Added company field
   title: String,
+  content: String,  // Added content field
+  image: String,    // Added image URL field
 });
 const Offer = mongoose.model("offers", offerSchema);
 
@@ -250,6 +253,48 @@ app.get("/rndm-offers", async (req, res) => {
   } catch (error) {
     console.error("Error fetching random offer:", error);
     res.status(500).send("Error fetching random offer");
+  }
+});
+
+
+// Offer Creation Route
+app.post("/offers", upload.single("image"), async (req, res) => {
+  try {
+    const { email, company, title, content } = req.body;
+    const imageFile = req.file;
+
+    let imageUrl = null;
+
+    if (imageFile) {
+      try {
+        const b64 = Buffer.from(imageFile.buffer).toString("base64");
+        const dataURI = `data:${imageFile.mimetype};base64,${b64}`;
+        
+        const cloudinaryResult = await cloudinary.uploader.upload(dataURI, {
+          resource_type: 'auto',
+          folder: 'offers' // Optional: customize folder name
+        });
+        
+        imageUrl = cloudinaryResult.secure_url;
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return res.status(500).send("Error uploading image");
+      }
+    }
+
+    const newOffer = new Offer({
+      email,
+      company,
+      title,
+      content,
+      image: imageUrl
+    });
+
+    await newOffer.save();
+    res.status(201).send("Offer created successfully");
+  } catch (error) {
+    console.error("Error creating offer:", error);
+    res.status(500).send("Error creating offer");
   }
 });
 
