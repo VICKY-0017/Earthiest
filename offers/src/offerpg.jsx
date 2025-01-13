@@ -40,7 +40,7 @@ export default function OfferProvider() {
       });
 
       if (response.ok) {
-        alert("Post created successfully!");
+        alert("ThankYou For Providing The Offer");
         setContent({ photo: "", company: "", title: "", content: "" });
         navigate("/"); // Redirect after successful offer creation
       } else {
