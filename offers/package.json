@@ -38,7 +38,7 @@
     "react-router-dom": "^6.25.1",
     "stream-browserify": "^3.0.0",
      "firebase": "^9.0.0",
-    "lucide-react": "^0.0.0"
+    "lucide-react": "^0.268.0"
   },
   "scripts": {
     "start": "react-scripts start",
