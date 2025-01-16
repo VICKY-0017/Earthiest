@@ -26,7 +26,7 @@ const [postList, setPostList] = useState([]);
   
     const deletePost = async(id)=>{
         try{
-            await axios.delete(`https://wyldlyf-orginal-bknd.onrender.com/${id}`);
+            await axios.delete(`https://wyldlyf-orginal-bknd.onrender.com/posts/${id}`);
             fetchPosts();
         }catch(err){
             console.log(err);
