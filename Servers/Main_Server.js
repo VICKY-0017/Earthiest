@@ -397,34 +397,45 @@ app.get("/rndm-offers/:email", async (req, res) => {
   }
 });
 
+
+
+//updated
 app.get("/user-dashboard/:email", async (req, res) => {
   try {
     const { email } = req.params;
 
     // Find the user based on the provided email
-    const user = await User.findOne({ email }).populate("receivedOffers.offerId");
+    const user = await User.findOne({ email }).populate('receivedOffers.offerId');
 
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Map through the receivedOffers to retrieve the offer details
-    const offers = user.receivedOffers.map((receivedOffer) => ({
-      offerId: receivedOffer.offerId._id,
-      company: receivedOffer.offerId.company,
-      title: receivedOffer.offerId.title,
-      content: receivedOffer.offerId.content,
-      image: receivedOffer.offerId.image,
-      receivedAt: receivedOffer.receivedAt,
-    }));
+    // Map through the receivedOffers with null checking
+    const offers = user.receivedOffers
+      .filter(receivedOffer => receivedOffer.offerId != null) // Filter out null offers
+      .map(receivedOffer => ({
+        offerId: receivedOffer.offerId._id,
+        company: receivedOffer.offerId.company,
+        title: receivedOffer.offerId.title,
+        content: receivedOffer.offerId.content,
+        image: receivedOffer.offerId.image,
+        receivedAt: receivedOffer.receivedAt,
+      }));
 
     res.status(200).json(offers);
   } catch (error) {
-    console.error("Error fetching user data:", error.message);  // Log the error message
-    console.error("Stack trace:", error.stack);  // Log the stack trace for deeper debugging
-    res.status(500).send("Error fetching user offers");
+    console.error("Error fetching user data:", error.message);
+    console.error("Stack trace:", error.stack);
+    res.status(500).json({ 
+      message: "Error fetching user offers",
+      error: error.message 
+    });
   }
 });
+
+
+
 
 
 
