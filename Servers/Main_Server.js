@@ -297,7 +297,7 @@ app.post("/offers", upload.single("image"), async (req, res) => {
     res.status(500).send("Error creating offer");
   }
 });
-
+   
 // Get Article by ID
 app.get("/articles/:id", async (req, res) => {
   try {
