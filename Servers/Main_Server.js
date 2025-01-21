@@ -307,7 +307,7 @@ app.get("/articles/:id", async (req, res) => {
       res.status(200).json({
         title: article.title,
         content: article.content,
-        image: article.image ? `${getBaseURL()}/${article.image}` : null,
+        image: article.image ? `${article.image}` : null,
       });
     } else {
       res.status(404).send("Article not found");
