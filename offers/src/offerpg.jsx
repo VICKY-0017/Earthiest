@@ -107,7 +107,7 @@ export default function OfferProvider() {
 
           <div>
             <label className="block font-medium text-gray-400 mb-2">
-              Content
+              Coupon Code
             </label>
             <textarea
               name="content"
