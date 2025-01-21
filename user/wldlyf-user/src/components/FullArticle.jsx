@@ -11,7 +11,7 @@ export default function FullArticle() {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/articles/${articleId}`);
+        const response = await axios.get(`https://wyldlyf-orginal-bknd.onrender.com/articles/${articleId}`);
 
         setArticle(response.data);
       } catch (error) {
@@ -39,7 +39,7 @@ export default function FullArticle() {
         
         {article.image && (
           <img
-            src={article.image.startsWith("http") ? article.image : `http://localhost:8000/${article.image}`}
+            src={article.image.startsWith("http") ? article.image : `https://wyldlyf-orginal-bknd.onrender.com/${article.image}`}
             alt={article.title}
             className="w-full h-64 object-cover rounded-lg mb-6"
           />
