@@ -19,7 +19,7 @@ export default function UserDetails() {
 
   const handleDeletePost = async (postId) => {
     try {
-      await axios.delete(`http://localhost:8000/posts/${postId}`);
+      await axios.delete(`https://wyldlyf-orginal-bknd.onrender.com/posts/${postId}`);
       setPosts(posts.filter(post => post._id !== postId));
     } catch (error) {
       console.error("Error deleting post:", error);
@@ -44,11 +44,11 @@ export default function UserDetails() {
       const fetchUserData = async () => {
         try {
           // Fetch user posts based on email
-          const postsResponse = await axios.get(`http://localhost:8000/posts/${user.email}`);
+          const postsResponse = await axios.get(`https://wyldlyf-orginal-bknd.onrender.com/posts/${user.email}`);
           setPosts(postsResponse.data || []);
           
           // Fetch user offers
-          const offersResponse = await axios.get(`http://localhost:8000/user-dashboard/${user.email}`);
+          const offersResponse = await axios.get(`https://wyldlyf-orginal-bknd.onrender.com/user-dashboard/${user.email}`);
           setOffers(Array.isArray(offersResponse.data) ? offersResponse.data : [offersResponse.data]);
         } catch (error) {
           console.error("Error fetching user data:", error.message);
