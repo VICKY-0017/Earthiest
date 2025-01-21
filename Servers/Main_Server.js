@@ -338,6 +338,222 @@ app.get("/user-details/:email", async (req, res) => {
 });
 
 
+
+
+
+//UPDATED
+
+
+//fetching the offers and posts for users
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  receivedOffers: [
+    {
+      offerId: { type: mongoose.Schema.Types.ObjectId, ref: "offers" }, // Reference to an offer
+      receivedAt: { type: Date, default: Date.now }, // Timestamp when offer was received
+    },
+  ],
+});
+const User = mongoose.model("User", userSchema);
+
+
+app.get("/rndm-offers/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+    const count = await Offer.countDocuments();
+    const random = Math.floor(Math.random() * count);
+    const offer = await Offer.findOne().skip(random); // Fetch a random offer
+
+    if (!offer) {
+      return res.status(404).send("No offers available");
+    }
+
+    // Find or create a user document
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({ email, receivedOffers: [] });
+    }
+
+    // Add the offer to the user's receivedOffers list if not already present
+    const alreadyReceived = user.receivedOffers.some((receivedOffer) => 
+      receivedOffer.offerId.toString() === offer._id.toString()
+    );
+
+    if (!alreadyReceived) {
+      user.receivedOffers.push({ offerId: offer._id });
+      await user.save();
+    }
+
+    res.status(200).json({
+      offerId: offer._id,
+      company: offer.company,
+      title: offer.title,
+      content: offer.content,
+      image: offer.image,
+    });
+  } catch (error) {
+    console.error("Error fetching random offer:", error);
+    res.status(500).send("Error fetching random offer");
+  }
+});
+
+app.get("/user-dashboard/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    // Find the user based on the provided email
+    const user = await User.findOne({ email }).populate("receivedOffers.offerId");
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Map through the receivedOffers to retrieve the offer details
+    const offers = user.receivedOffers.map((receivedOffer) => ({
+      offerId: receivedOffer.offerId._id,
+      company: receivedOffer.offerId.company,
+      title: receivedOffer.offerId.title,
+      content: receivedOffer.offerId.content,
+      image: receivedOffer.offerId.image,
+      receivedAt: receivedOffer.receivedAt,
+    }));
+
+    res.status(200).json(offers);
+  } catch (error) {
+    console.error("Error fetching user data:", error.message);  // Log the error message
+    console.error("Stack trace:", error.stack);  // Log the stack trace for deeper debugging
+    res.status(500).send("Error fetching user offers");
+  }
+});
+
+
+
+app.post("/store-offer", async (req, res) => {
+  try {
+    const { email, offerId } = req.body;
+
+    // Validate request body
+    if (!email || !offerId) {
+      return res.status(400).send("Email and offerId are required");
+    }
+
+    // Check if the offer exists in the Offer collection
+    const offer = await Offer.findById(offerId);
+    if (!offer) {
+      return res.status(404).send("Offer not found");
+    }
+
+    // Find or create a user document
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({ email, receivedOffers: [] });
+    }
+
+    // Check if the offer has already been added to the user's receivedOffers
+    const alreadyReceived = user.receivedOffers.some((receivedOffer) =>
+      receivedOffer.offerId.toString() === offerId
+    );
+
+    if (alreadyReceived) {
+      return res.status(400).send("Offer already stored for this user");
+    }
+
+    // Add the offer to the user's receivedOffers array
+    user.receivedOffers.push({
+      offerId: offer._id,
+      receivedAt: new Date(),
+    });
+
+    // Save the user with the new offer
+    await user.save();
+
+    // Send response with offer details
+    res.status(201).json({
+      message: "Offer successfully stored for the user",
+      offer: {
+        offerId: offer._id,
+        company: offer.company,
+        title: offer.title,
+        content: offer.content,
+        image: offer.image,
+      },
+    });
+  } catch (error) {
+    console.error("Error storing offer:", error);
+    res.status(500).send("Error storing offer");
+  }
+});
+
+//retrive user post
+// Get Posts by Email
+app.get("/user-posts/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+    const posts = await Post.find({ email });
+    
+    res.status(200).json(
+      posts.map((post) => ({
+        _id: post._id,
+        email: post.email,
+        title: post.title,
+        content: post.content,
+        image: post.image,
+      }))
+    );
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    res.status(500).send("Error fetching user posts");
+  }
+});
+
+
+//posts for the users
+app.get("/posts/:email", async (req, res) => {
+  try {
+    const { email } = req.params;  // Get the email from the URL parameter
+    
+    // Filter posts where the email matches
+    const posts = await Post.find({ email: email });
+
+    // Return the posts, including the image field if available
+    res.status(200).json(
+      posts.map((post) => ({
+        ...post._doc,
+        image: post.image ? post.image : null,  // Ensure image field is included or null
+      }))
+    );
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    res.status(500).send("Error fetching posts");
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.get("/test-upload", (req, res) => {
   fs.readdir("./uploads", (err, files) => {
     if (err) return res.status(500).send("Error accessing uploads.");
