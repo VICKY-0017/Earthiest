@@ -44,7 +44,7 @@ export default function UserDetails() {
       const fetchUserData = async () => {
         try {
           // Fetch user posts based on email
-          const postsResponse = await axios.get(`https://wyldlyf-orginal-bknd.onrender.com/posts/${user.email}`);
+          const postsResponse = await axios.get(`https://wyldlyf-orginal-bknd.onrender.com/user-posts/${user.email}`);
           setPosts(postsResponse.data || []);
           
           // Fetch user offers
