@@ -35,7 +35,7 @@ export function Showcntnt({ photo, title, content, onDelete, articleId }) {
           </button>
 
           {/* Delete Button */}
-          <button
+{/*           <button
             className="px-4 py-2 border-2 border-red-600 text-red-600
                       rounded-md font-medium hover:bg-red-600 hover:text-white
                       shadow-md hover:shadow-red-500/50
@@ -44,7 +44,7 @@ export function Showcntnt({ photo, title, content, onDelete, articleId }) {
             onClick={onDelete}
           >
             Delete
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
