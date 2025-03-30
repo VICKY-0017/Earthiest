@@ -131,7 +131,7 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
+{/*           <button
             onClick={toggleMobileMenu}
             className={`md:hidden p-2 rounded-lg transition-colors duration-200 ${
               isDarkMode
@@ -140,7 +140,7 @@ export function Navbar() {
             }`}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          </button> */}
         </div>
 
         {/* Mobile Menu */}
@@ -199,7 +199,7 @@ export function Navbar() {
             )}
 
             {/* Mobile Theme Toggle */}
-            <button
+{/*             <button
               onClick={toggleTheme}
               className={`w-full px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200 ${
                 isDarkMode
@@ -218,7 +218,7 @@ export function Navbar() {
                   <span>Light Mode</span>
                 </>
               )}
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
