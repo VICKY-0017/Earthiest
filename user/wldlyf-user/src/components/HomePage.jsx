@@ -17,7 +17,7 @@ export function HomePage() {
       setIsLoading(true);
       const response = await axios.get(
         // "https://wyldlyf-orginal-bknd.onrender.com/posts"
-         " http://localhost:8000/posts"
+         "https://wyldlyf-orginal-bknd.onrender.com/posts"
       );
       setPostList(response.data);
     } catch (err) {
@@ -29,7 +29,7 @@ export function HomePage() {
 
   const deletePost = async (id) => {
     try {
-      await axios.delete(` http://localhost:8000/posts/${id}`);
+      await axios.delete(` https://wyldlyf-orginal-bknd.onrender.com/posts/${id}`);
       fetchPosts();
     } catch (err) {
       console.log(err);
