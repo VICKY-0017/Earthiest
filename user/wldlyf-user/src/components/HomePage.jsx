@@ -16,7 +16,8 @@ export function HomePage() {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        "https://wyldlyf-orginal-bknd.onrender.com/posts"
+        // "https://wyldlyf-orginal-bknd.onrender.com/posts"
+         " http://localhost:8000/posts"
       );
       setPostList(response.data);
     } catch (err) {
@@ -28,7 +29,7 @@ export function HomePage() {
 
   const deletePost = async (id) => {
     try {
-      await axios.delete(`https://wyldlyf-orginal-bknd.onrender.com/posts/${id}`);
+      await axios.delete(` http://localhost:8000/posts/${id}`);
       fetchPosts();
     } catch (err) {
       console.log(err);
@@ -48,26 +49,24 @@ export function HomePage() {
         />
         <div className="absolute inset-0 bg-black bg-opacity-40" />
         <div className="relative z-10 h-full flex flex-col justify-center items-center text-white">
-          <h1 className="text-7xl font-bold mb-4 tracking-tight">
-            Earthiest
+          <h1 className="text-7xl font-bold mb-4 tracking-tight animate-fade-in">
+            Plant & Earn
           </h1>
-          <p className="text-3xl font-light italic mb-8">
-            Planting Lives, Growing Future
+          <p className="text-3xl font-light italic mb-8 animate-slide-up">
+            Every Tree Plants a Better Future
           </p>
-          <div>
-            <Link 
-              to="/createcontent"
-              className="group inline-flex items-center gap-2 px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300 transform hover:scale-105"
-            >
-              Get Started
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
+          <Link 
+            to="/createcontent"
+            className="eco-button group inline-flex items-center gap-2 animate-bounce"
+          >
+            Start Planting
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </div>
 
       {/* Featured Section */}
-      <div className="py-16 px-4 md:px-8">
+      {/* <div className="py-16 px-4 md:px-8">
         <h2 className="text-4xl font-bold mb-8 text-center text-gray-800">
           Featured Stories
         </h2>
@@ -92,7 +91,41 @@ export function HomePage() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
+
+      {/* Features Section */}
+      <section className="py-16 bg-natural-cream">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center text-forest-green mb-12">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: "🌱",
+                title: "Plant a Tree",
+                description: "Plant any tree in your locality"
+              },
+              {
+                icon: "📸",
+                title: "Share Your Impact",
+                description: "Upload a photo of your planted tree"
+              },
+              {
+                icon: "🎁",
+                title: "Earn Rewards",
+                description: "Get exclusive offers from eco-friendly brands"
+              }
+            ].map((feature, index) => (
+              <div key={index} className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Latest Posts Section */}
       <div className="py-16 px-4 md:px-8 bg-gray-50">
@@ -140,6 +173,26 @@ export function HomePage() {
           )}
         </div>
       </div>
+      <footer className="bg-green-900 text-white py-8 mt-16 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+            <h3 className="text-xl font-bold mb-4">Plant & Earn</h3>
+            <p className="text-green-200">Making the world greener, one tree at a time.</p>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold mb-3">Quick Links</h4>
+            <ul className="space-y-2">
+              <li><Link to="/" className="text-green-200 hover:text-white">Home</Link></li>
+              <li><Link to="/createcontent" className="text-green-200 hover:text-white">Plant a Tree</Link></li>
+              <li><Link to="/Photoupload" className="text-green-200 hover:text-white">Upload Photo</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold mb-3">Contact Us</h4>
+            <p className="text-green-200">Email: support@earthiest.com</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
