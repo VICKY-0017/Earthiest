@@ -131,7 +131,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
        try{
       
-              const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+              const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
               const prompt = "Is the sapling grounded? if planted output as YES else No.";
       
