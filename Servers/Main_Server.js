@@ -9,6 +9,7 @@ import fs from "fs";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { fileURLToPath } from "url";
 import { v2 as cloudinary } from 'cloudinary';
+import { setTimeout } from 'timers/promises';
 
 
 
@@ -46,6 +47,7 @@ const offerSchema = new mongoose.Schema({
 });
 const Offer = mongoose.model("offers", offerSchema);
 
+
 // Multer Configuration
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage,
@@ -62,11 +64,11 @@ const getBaseURL = () => {
 
 // Middleware
 
-/*const corsOptions = {
+const corsOptions = {
   origin: ["http://localhost:3000", "https://wyldlyf-orginal.onrender.com","https://offers-providers.onrender.com"],  // List all allowed origins
   credentials: true,
-};*/
-//app.use(cors());
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -82,6 +84,34 @@ if (process.env.NODE_ENV === "production") {
 // Google Generative AI Setup
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 
+// Rate limiting configuration
+const RATE_LIMIT = {
+  requestsPerMinute: 10, // Reduced from 50 to be more conservative
+  requestsPerDay: 60,    // Reduced from 500 to match free tier limits
+  requests: [],
+  async waitForAvailableSlot() {
+    const now = Date.now();
+    // Clean up old requests
+    this.requests = this.requests.filter(time => now - time < 24 * 60 * 60 * 1000);
+    
+    // Check daily limit
+    if (this.requests.length >= this.requestsPerDay) {
+      throw new Error('Daily quota exceeded. Please try again tomorrow.');
+    }
+
+    // Check minute limit and wait if needed
+    const recentRequests = this.requests.filter(time => now - time < 60 * 1000);
+    if (recentRequests.length >= this.requestsPerMinute) {
+      const waitTime = 60 * 1000 - (now - recentRequests[0]);
+      await setTimeout(waitTime);
+    }
+
+    this.requests.push(now);
+  }
+};
+
+// Verify API key is loaded
+console.log("API Key loaded:", process.env.API_KEY ? "Yes" : "No");
 
 // Utility Functions for Google Generative AI
 function fileToGenerativePart(fileBuffer, mimeType) {
@@ -124,29 +154,84 @@ cloudinary.config({
 
 // Google Generative AI Endpoint
 app.post("/upload", upload.single("file"), async (req, res) => {
-    const fileBuffer = req.file.buffer; // Path to uploaded file
-    const mimeType = req.file.mimetype; // MIME type of uploaded file
-      // Create a Generative Part for the file
-    const filePart = fileToGenerativePart(fileBuffer, mimeType);
+    if (!req.file) {
+        return res.status(400).send('No file uploaded');
+    }
 
-       try{
-      
-              const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-              const prompt = "Is the sapling grounded? if planted output as YES else No.";
-      
-              const imageParts = [filePart];
-      
-              const generatedContent = await model.generateContent([prompt, ...imageParts]);
-              
-              res.json({response: generatedContent.response.text()});
-              if(response === "YES"){
-                
-              }
-          }catch(error){
-              console.error("error genrating content",error)
-              res.status(500).send('error genreating content');
-          }
+    const processRequest = async () => {
+        try {
+            await RATE_LIMIT.waitForAvailableSlot();
+
+            const fileBuffer = req.file.buffer;
+            const mimeType = req.file.mimetype;
+            const filePart = fileToGenerativePart(fileBuffer, mimeType);
+            
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const prompt = "Is the sapling grounded? if planted output as YES else No.";
+            const imageParts = [filePart];
+
+            const generatedContent = await model.generateContent([prompt, ...imageParts]);
+            return { success: true, response: generatedContent.response.text() };
+        } catch (error) {
+            console.error("Gemini API Error:", {
+                status: error.status,
+                message: error.message,
+                details: error.errorDetails
+            });
+
+            if (error.status === 429 || error.message.includes('quota exceeded')) {
+                throw new Error('RATE_LIMITED');
+            }
+            return { success: false, error: error.message };
+        }
+    };
+
+    try {
+        let retries = 0;
+        const maxRetries = 3;
+        const baseDelay = 13000; // 13 seconds base delay
+        let result;
+
+        while (retries < maxRetries) {
+            try {
+                result = await processRequest();
+                if (result.success) {
+                    return res.json({ response: result.response });
+                }
+                break;
+            } catch (error) {
+                if (error.message === 'RATE_LIMITED' && retries < maxRetries - 1) {
+                    retries++;
+                    const delay = Math.pow(2, retries) * baseDelay; // Exponential backoff
+                    console.log(`Rate limited. Retry ${retries}/${maxRetries} in ${delay/1000} seconds...`);
+                    await setTimeout(delay);
+                    continue;
+                }
+                throw error;
+            }
+        }
+
+        if (!result || !result.success) {
+            return res.status(429).json({
+                error: 'Rate limit exceeded',
+                message: 'The service is experiencing high demand. Please try again in a few minutes.',
+                retryAfter: 60 // Suggest retry after 1 minute
+            });
+        }
+
+    } catch (error) {
+        console.error("Final error:", error);
+        const status = error.status || 500;
+        const message = error.message === 'RATE_LIMITED' 
+            ? 'Service is busy. Please try again in a few minutes.'
+            : error.message || 'Error processing request';
+            
+        res.status(status).json({
+            error: true,
+            message,
+            retryAfter: status === 429 ? 60 : undefined
+        });
+    }
 });
 
 
@@ -256,7 +341,6 @@ app.get("/rndm-offers", async (req, res) => {
   }
 });
 
-
 // Offer Creation Route
 app.post("/offers", upload.single("image"), async (req, res) => {
   try {
@@ -297,7 +381,8 @@ app.post("/offers", upload.single("image"), async (req, res) => {
     res.status(500).send("Error creating offer");
   }
 });
-   
+
+
 // Get Article by ID
 app.get("/articles/:id", async (req, res) => {
   try {
@@ -339,12 +424,7 @@ app.get("/user-details/:email", async (req, res) => {
 
 
 
-
-
-//UPDATED
-
-
-//fetching the offers and posts for users
+//fetching the offers for users
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   receivedOffers: [
@@ -397,9 +477,6 @@ app.get("/rndm-offers/:email", async (req, res) => {
   }
 });
 
-
-
-//updated
 app.get("/user-dashboard/:email", async (req, res) => {
   try {
     const { email } = req.params;
@@ -433,9 +510,6 @@ app.get("/user-dashboard/:email", async (req, res) => {
     });
   }
 });
-
-
-
 
 
 
@@ -498,9 +572,11 @@ app.post("/store-offer", async (req, res) => {
 //retrive user post
 // Get Posts by Email
 app.get("/user-posts/:email", async (req, res) => {
+  console.log("Hello");
   try {
     const { email } = req.params;
     const posts = await Post.find({ email });
+    console.log(res); 
     
     res.status(200).json(
       posts.map((post) => ({
@@ -538,29 +614,6 @@ app.get("/posts/:email", async (req, res) => {
     res.status(500).send("Error fetching posts");
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
