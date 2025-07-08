@@ -64,11 +64,11 @@ const getBaseURL = () => {
 
 // Middleware
 
-/*const corsOptions = {
+const corsOptions = {
   origin: ["http://localhost:3000", "https://wyldlyf-orginal.onrender.com","https://offers-providers.onrender.com"],  // List all allowed origins
   credentials: true,
-};*/
-//app.use(cors());
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
