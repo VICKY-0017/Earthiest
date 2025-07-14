@@ -1,11 +1,16 @@
 # 🌱 Earthiest - Rewarding Tree Planting with Verified Impact
 
+
 **Earthiest** is a green-tech initiative that empowers individuals to contribute to a healthier planet by planting trees and earning rewards. Users upload photos of their sapling or tree plantation efforts, which are verified using advanced AI (Gemini API). Verified users receive coupons or offers that can be redeemed or donated for wildlife preservation.
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/0fbe5902-725c-4778-b0c8-86d8fa413f5d"
 alt="Earthiest Banner" width="500" height="500">
 </p>
+
+## 🔗 Visit the Website
+
+[🌍 Click here to visit Earthiest](https://earthiest.vercel.app)
 
 
 ---
