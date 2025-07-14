@@ -10,7 +10,7 @@ alt="Earthiest Banner" width="500" height="500">
 
 
 
-[🌍 Click here to visit Earthiest](https://wyldlyf-orginal.onrender.com/)
+[Click here to visit Earthiest](https://wyldlyf-orginal.onrender.com/)
 ---
 
 ## 🌍 Features
