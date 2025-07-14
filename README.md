@@ -2,7 +2,8 @@
 
 **Earthiest** is a green-tech initiative that empowers individuals to contribute to a healthier planet by planting trees and earning rewards. Users upload photos of their sapling or tree plantation efforts, which are verified using advanced AI (Gemini API). Verified users receive coupons or offers that can be redeemed or donated for wildlife preservation.
 
-<img src="https://your-image-link.com/banner.png" alt="Earthiest Banner" width="800" height="200">
+<img src="https://github.com/user-attachments/assets/0fbe5902-725c-4778-b0c8-86d8fa413f5d"
+alt="Earthiest Banner" width="800" height="200">
 
 
 ---
